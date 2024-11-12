@@ -23,3 +23,11 @@ Additional things the teacher mentionned *could* be interesting for our subject 
 The report needs to be written in RMarkdown, so I created a folder `report` in which we'll place it, not to mix it up with the actual code files (which we might want to use for extensive testing). I'm planning on putting the others in `src`.
 
 
+## Current Status
+
+The most recent addition is the side-to-side confusion matrix view of the multivariate mixed model, post-training and during validation : 
+
+![](https://github.com/ChrisMzz/MNIST-analysis/blob/main/readme_images/ConfusionMatrices.svg)
+
+
+

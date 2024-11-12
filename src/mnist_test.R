@@ -8,6 +8,28 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 library(dslabs) # contains mnist dataset
 library(flexmix)
 
+
+
+# predict_digit allows classification of the given image into 
+# one of the model's component classes. Not designed for vectorization.
+predict_digit = function (model, image) {
+  params = parameters(model)
+  m = 0
+  K = 0
+  for (k in 1:length(levels(factor(cluster_assignments)))) {
+    accuracy = sum(image*params[,k])
+    if (accuracy > m) {
+      K = k
+      m = accuracy
+    }
+  }
+  if (m==0) { print("Image cannot be null! Prediction was 0.")}
+  return(K-1)
+}
+
+
+
+
 mnist <- read_mnist()
 
 # MNIST images are of size 28x28
@@ -21,8 +43,10 @@ n = 1000
 
 # generate n training images in an array of shape (n, 28x28)
 train_images = array(rep(0,s*n), c(n,s))
+test_images = array(rep(0,s*n), c(n,s))
 for (i in 1:n) {
   train_images[i,] = matrix(t(mnist$train$images)[((i-1)*s+1):(i*s)], nrow=28)[,28:1]
+  test_images[i,] = matrix(t(mnist$test$images)[((i-1)*s+1):(i*s)], nrow=28)[,28:1]
 }
 
 
@@ -30,6 +54,7 @@ for (i in 1:n) {
 
 threshold_value = 127
 train_images <- ifelse(train_images > threshold_value, 1, 0)
+test_images <- ifelse(test_images > threshold_value, 1, 0)
 
 # check if preprocessing works as intended on one of the images
 image(1:28, 1:28, matrix(train_images[5,], nrow=28),
@@ -38,6 +63,12 @@ image(1:28, 1:28, matrix(train_images[5,], nrow=28),
 
 #############################
 
+
+
+
+# Re-run code from here (without set seed) for further testing
+
+set.seed(127)
 
 # sample a small amount of data from the training set, 
 # along with the corresponding labels
@@ -82,8 +113,37 @@ print(tab_data)
 
 
 
+### VALIDATION
 
 
+# resample new indices for test images
+sample_idx = sample(1:n, 800)
+test_images_sample = test_images[sample_idx, ]
+test_labels_sample = mnist$test$labels[sample_idx]
+
+# to test with the training sample
+# test_images_sample = train_images_sample
+# test_labels_sample = train_labels_sample
+
+
+# make predictions
+predictions = rep(0, length(sample_idx))
+for (idx in 1:length(sample_idx)) {
+  predictions[idx] = predict_digit(flexmix_model, test_images_sample[idx,])
+}
+
+# generate confusion matrix
+pred_data = table(predictions, test_labels_sample)
+print(pred_data)
+
+# display both confusion matrices side by side
+layout(matrix(1:2, ncol=2))
+tab_dim = dim(tab_data)
+pred_dim = dim(pred_data)
+image(1:tab_dim[1], 1:tab_dim[2], t(matrix(tab_data, nrow =10))[,10:1],
+      col = gray(seq(0, 1, 0.05)), xlab = "labels", ylab="predictions", main="Training Data Confusion Matrix")
+image(1:pred_dim[1], 1:pred_dim[2], t(matrix(pred_data, nrow =10))[,10:1],
+      col = gray(seq(0, 1, 0.05)), xlab = "labels", ylab="predictions", main="Test Data Confusion Matrix")
 
 
 
