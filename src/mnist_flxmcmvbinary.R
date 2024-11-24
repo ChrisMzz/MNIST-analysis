@@ -147,4 +147,3 @@ image(1:pred_dim[1], 1:pred_dim[2], t(matrix(pred_data, nrow =10))[,10:1],
 
 
 
-
