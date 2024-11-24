@@ -27,7 +27,7 @@ predict_digit = function (model, image) {
   return(K-1)
 }
 
-
+set.seed(128)
 
 
 mnist <- read_mnist()
@@ -78,7 +78,7 @@ image(1:56, 1:56, matrix(train_images[5,], nrow=56),
 
 # Re-run code from here (without set seed) for further testing
 
-set.seed(127)
+
 
 # sample a small amount of data from the training set, 
 # along with the corresponding labels
@@ -103,9 +103,9 @@ print(flexmix_model)
 
 
 # generate figures for each cluster's parameter estimation
-layout(matrix(1:6, 2, 3, byrow = TRUE))
+layout(matrix(1:9, 3, 3, byrow = TRUE))
 params = parameters(flexmix_model)
-for (k in 1:6) {
+for (k in 1:9) {
   comp = matrix(params[,k], nrow=56)
   image(1:56, 1:56, comp, col = gray(seq(0, 1, 0.05)), xlab = "", ylab="", xaxt="n", yaxt="n", main=paste("Class",k))
 }
@@ -151,9 +151,14 @@ layout(matrix(1:2, ncol=2))
 tab_dim = dim(tab_data)
 pred_dim = dim(pred_data)
 image(1:tab_dim[1], 1:tab_dim[2], t(matrix(tab_data, nrow =10))[,10:1],
-      col = gray(seq(0, 1, 0.05)), xlab = "labels", ylab="predictions", main="Training Data Confusion Matrix")
+      col = gray(seq(0, 1, 0.05)), xlab = "labels", ylab="predictions", main="Training Data Confusion Matrix", xaxt="n", yaxt="n")
+axis(1, at=seq(1, 9, 1), las=2, labels=1:9)
+axis(2, at=seq(1, 10, 1), las=2, labels=0:9)
+
 image(1:pred_dim[1], 1:pred_dim[2], t(matrix(pred_data, nrow =10))[,10:1],
-      col = gray(seq(0, 1, 0.05)), xlab = "labels", ylab="predictions", main="Test Data Confusion Matrix")
+      col = gray(seq(0, 1, 0.05)), xlab = "labels", ylab="predictions", main="Test Data Confusion Matrix", xaxt="n", yaxt="n")
+axis(1, at=seq(1, 9, 1), las=2, labels=1:9)
+axis(2, at=seq(1, 10, 1), las=2, labels=0:9)
 
-
-
+print(cor(c(tab_data), c(pred_data)))
+# shows 0.15 correlation

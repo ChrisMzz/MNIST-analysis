@@ -57,6 +57,7 @@ train_images <- ifelse(train_images > threshold_value, 1, 0)
 test_images <- ifelse(test_images > threshold_value, 1, 0)
 
 # check if preprocessing works as intended on one of the images
+layout(1)
 image(1:28, 1:28, matrix(train_images[5,], nrow=28),
       col = gray(seq(0, 1, 0.05)), xlab = "", ylab="")
 
@@ -97,7 +98,7 @@ layout(matrix(1:10, 2, 5, byrow = TRUE))
 params = parameters(flexmix_model)
 for (k in 1:10) {
   comp = matrix(params[,k], nrow=28)
-  image(1:28, 1:28, comp, col = gray(seq(0, 1, 0.05)), xlab = "", ylab="")
+  image(1:28, 1:28, comp, col = gray(seq(0, 1, 0.05)), xlab = "", ylab="", xaxt="n", yaxt="n", main=paste("Class",k))
 }
 # each cluster can be seen as an operator taking the weighted average of 
 # the pixels of an input image, where the weights for each cluster
@@ -145,5 +146,5 @@ image(1:tab_dim[1], 1:tab_dim[2], t(matrix(tab_data, nrow =10))[,10:1],
 image(1:pred_dim[1], 1:pred_dim[2], t(matrix(pred_data, nrow =10))[,10:1],
       col = gray(seq(0, 1, 0.05)), xlab = "labels", ylab="predictions", main="Test Data Confusion Matrix")
 
-
-
+print(cor(c(tab_data), c(pred_data)))
+# shows 0.78 correlation
